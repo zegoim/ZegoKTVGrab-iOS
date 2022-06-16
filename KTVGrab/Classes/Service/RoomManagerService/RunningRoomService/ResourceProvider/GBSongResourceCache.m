@@ -8,23 +8,21 @@
 #import "GBSongResourceCache.h"
 #import "GBSong.h"
 #import "GBSongPlay.h"
+#import <YYKit/YYKit.h>
 
 @interface GBSongResourceCache ()
 
 /**
  * 缓存 GBSong  对象, key 为 songID
+ * <NSString *, GBSong *>
  */
-@property (nonatomic, strong) NSMutableDictionary<NSString *, GBSong *> *songTable;
+@property (nonatomic, strong) YYMemoryCache *songTable;
 
 /**
  * 缓存 GBSongPlay 对象, key 为 songID
+ * <NSString *, GBSongPlay *>
  */
-@property (nonatomic, strong) NSMutableDictionary<NSString *, GBSongPlay *> *songPlayTable;
-
-/**
- * 映射 resourceID 和 songID
- */
-@property (nonatomic, strong) NSMutableDictionary *resourceTable;
+@property (nonatomic, strong) YYMemoryCache *songPlayTable;
 
 @end
 
@@ -34,9 +32,16 @@
 {
   self = [super init];
   if (self) {
-    _songTable = [NSMutableDictionary dictionary];
-    _songPlayTable = [NSMutableDictionary dictionary];
-    _resourceTable = [NSMutableDictionary dictionary];
+    _songTable = [[YYMemoryCache alloc] init];
+    _songTable.shouldRemoveAllObjectsWhenEnteringBackground = NO;
+    _songTable.shouldRemoveAllObjectsOnMemoryWarning = NO;
+    _songTable.didReceiveMemoryWarningBlock = ^(YYMemoryCache * _Nonnull cache) {
+      GB_LOG_W(@"[MEMORY] Receiving memory warning, clear all objects related.");
+    };
+
+    _songPlayTable = [[YYMemoryCache alloc] init];
+    _songPlayTable.shouldRemoveAllObjectsOnMemoryWarning = NO;
+    _songPlayTable.shouldRemoveAllObjectsWhenEnteringBackground = NO;
   }
   return self;
 }
@@ -59,6 +64,7 @@
   if (songID.length > 0) {
     GBSong *song = [self.songTable objectForKey:songID];
     if (!song) {
+      GB_LOG_E(@"[BUG] -[%@ %@] Song is nil. SongID: %@, songTable: %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), songID, self.songTable);
       song = [[GBSong alloc] init];
       song.songID = songID;
       [self setSong:song bySongID:songID];

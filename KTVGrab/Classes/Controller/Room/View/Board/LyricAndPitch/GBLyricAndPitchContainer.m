@@ -18,6 +18,7 @@
 @property (nonatomic, strong) ZegoLyricView *lyricView;
 @property (nonatomic, strong) ZegoPitchView *pitchView;
 @property (nonatomic, strong) GBSong *curSong;
+@property (nonatomic, strong) ZegoLyricModel *lyricModel;
 
 @end
 
@@ -41,6 +42,7 @@
 
 - (void)setupLyric:(NSString *)lyric {
   ZegoLyricModel *lyricModel = [ZegoLyricModel analyzeLyricData:lyric trim:NO];
+  self.lyricModel = lyricModel;
   [self.lyricView setupMusicDataSource:lyricModel beginTime:self.curSong.segBegin + self.curSong.preludeDuration endTime:self.curSong.segEnd];
 }
 
@@ -48,24 +50,14 @@
   if (!pitch) {
     return;
   }
-  NSData *data = [pitch dataUsingEncoding:NSUTF8StringEncoding];
-  NSDictionary *rsp = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:NULL];
-  NSDictionary *dataDict = rsp[@"data"];
-  NSArray *pitchModels = nil;
-  
-  if (dataDict) {
-    NSDictionary *pitchDict = dataDict[@"pitch"];
-    if (pitchDict) {
-      NSArray<ZegoPitchModel *> *pitchArray = [NSArray modelArrayWithClass:[ZegoPitchModel class] json:pitchDict];
-      pitchModels = pitchArray;
-    }
-  }
-  GB_LOG_D(@"[SCORE] Pitch models: %ld", pitchModels.count);
-  
   NSInteger beginTime = self.curSong.segBegin + self.curSong.preludeDuration;
   NSInteger endTime = self.curSong.segEnd;
   
-  [self.pitchView setStandardPitchModels:pitchModels beginTime:beginTime endTime:endTime];
+  NSArray *pitchModels = [ZegoPitchModel analyzePitchData:pitch beginTime:beginTime endTime:endTime krcFormatOffset:self.lyricModel.krcFormatOffset];
+
+  GB_LOG_D(@"[SCORE] Pitch models: %ld", pitchModels.count);
+  
+  [self.pitchView setStandardPitchModels:pitchModels];
 }
 
 - (void)reset {
@@ -119,7 +111,6 @@
     config.playingFont = [UIFont systemFontOfSize:20 weight:UIFontWeightMedium];
     config.playingColor = UIColorHex(0xFF3571);
     config.normalColor = [UIColor whiteColor];
-    config.shouldTrimBeginTime = NO;
     
     ZegoLyricView *view = [[ZegoLyricView alloc] initWithFrame:CGRectZero config:config];
     view.lyricDelegate = self;

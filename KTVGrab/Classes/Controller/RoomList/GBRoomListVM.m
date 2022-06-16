@@ -56,8 +56,12 @@
     }else {
       if (err.code == GBBackendRoomIsFull) {
         [self.delegate toastError:@"体验房间已满6人，请更换或新建房间"];
-      }else {
-        [self.delegate toastError:@"网络异常, 请检查网络后重试"];
+      }
+      else if (err.code == GBBackendRoomNotExists) {
+        [self.delegate toastError:@"房间不存在，请刷新列表"];
+      }
+      else {
+        [self.delegate toastError:@"网络异常，请检查网络后重试"];
       }
     }
     if (complete) {

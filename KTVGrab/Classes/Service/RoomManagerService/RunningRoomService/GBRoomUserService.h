@@ -99,7 +99,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-
+/**
+ * 这个类比较杂, 基本上和用户有关的方法都会写在这里
+ * 例如: 开关麦克风, 推拉流, 获取用户信息等
+ */
 @interface GBRoomUserService : NSObject <GBAgentUserUpdateListener>
 
 //TODO: 这里的 roomInfo 目前仅用于获取 roomID, 用于开关麦调用后台接口. 以后可考虑直接使用 RoomManager 获取, 废弃该变量.
@@ -172,7 +175,6 @@ NS_ASSUME_NONNULL_BEGIN
  * 检查用户流是否存在
  */
 - (BOOL)checkIfUserStreamOnAir:(NSString *)userID;
-
 
 @end
 

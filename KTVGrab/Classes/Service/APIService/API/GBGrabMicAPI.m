@@ -16,6 +16,8 @@
 - (NSDictionary *)payload {
   return @{
     @"room_id": self.roomID,
+    @"round": @(self.round),
+    @"song_index": @(self.index),
   };
 }
 

@@ -24,13 +24,20 @@
 
 @implementation GBSongResourceProvider
 
-- (instancetype)init {
-  self = [super init];
-  if (self) {
-    _resourceCache = [[GBSongResourceCache alloc] init];
-    _resourceDownloader = [[GBSongResourceDownloader alloc] initWithResourceCache:_resourceCache];
+- (GBSongResourceCache *)resourceCache {
+  if (!_resourceCache) {
+    GBSongResourceCache *obj = [[GBSongResourceCache alloc] init];
+    _resourceCache = obj;
   }
-  return self;
+  return _resourceCache;
+}
+
+- (GBSongResourceDownloader *)resourceDownloader {
+  if (!_resourceDownloader) {
+    GBSongResourceDownloader *obj = [[GBSongResourceDownloader alloc] initWithResourceCache:self.resourceCache];
+    _resourceDownloader = obj;
+  }
+  return _resourceDownloader;
 }
 
 - (GBSong *)getSongBySongID:(NSString *)songID {

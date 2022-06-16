@@ -41,7 +41,7 @@
     roomInfo.seq = seq;
     [self.listener roomInfoService:self onRoomInfoUpdate:roomInfo];
   }else {
-    GB_LOG_W(@"This room state seq has expired. Last seq: %ld, this seq: %ld", self.lastSeq, seq);
+    GB_LOG_W(@"This room state seq has expired. Last seq: %lld, this seq: %ld", self.lastSeq, seq);
   }
 }
 

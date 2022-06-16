@@ -7,6 +7,7 @@
 
 #import "GBSongListService.h"
 #import "GBSongPlay.h"
+#import <YYKit/YYKit.h>
 
 @interface GBSongListService ()
 
@@ -15,8 +16,10 @@
  *  index1: songPlay1,
  *  index2: songPlay2
  * }
+ *
+ * <NSNumber *, NSDictionary<NSNumber *, GBSongPlay *> *>
  */
-@property (nonatomic, strong) NSMutableDictionary<NSNumber *, NSDictionary<NSNumber *, GBSongPlay *> *> *songPlaysAtRoundTable;
+@property (nonatomic, strong) YYMemoryCache *songPlaysAtRoundTable;
 @property (nonatomic, assign) NSUInteger lastSeq;
 @property (nonatomic,  weak ) id<GBSongListListener> listener;
 
@@ -31,7 +34,9 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _songPlaysAtRoundTable = [NSMutableDictionary dictionary];
+    _songPlaysAtRoundTable = [[YYMemoryCache alloc] init];
+    _songPlaysAtRoundTable.shouldRemoveAllObjectsWhenEnteringBackground = NO;
+    _songPlaysAtRoundTable.shouldRemoveAllObjectsOnMemoryWarning = NO;
   }
   return self;
 }

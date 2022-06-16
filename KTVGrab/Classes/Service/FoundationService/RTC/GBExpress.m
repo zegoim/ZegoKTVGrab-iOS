@@ -124,6 +124,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
   [self setupSEI];
   [self setupSoundLevel];
   [self setupMedia];
+  [self setup3A];
 }
 
 - (void)setupAuxChannel {
@@ -147,6 +148,14 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
   [self setIemEnable:NO];
   [self setVoiceCaptureVolume:100];
   [self setReverbPreset:ZegoReverbPresetRecordingStudio];
+}
+
+- (void)setup3A {
+  [[ZegoExpressEngine sharedEngine] enableAEC:YES];
+  [[ZegoExpressEngine sharedEngine] enableAGC:NO];
+  [[ZegoExpressEngine sharedEngine] enableANS:YES];
+  [[ZegoExpressEngine sharedEngine] setAECMode:ZegoAECModeSoft];
+  [[ZegoExpressEngine sharedEngine] setANSMode:ZegoANSModeMedium];
 }
 
 #pragma mark - Internal
@@ -190,7 +199,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
 - (void)requestSongClipWithSongID:(NSString *)songID complete:(nonnull void (^)(NSError * _Nonnull, GBSong * _Nonnull))complete {
   ZegoCopyrightedMusicRequestConfig *config = [[ZegoCopyrightedMusicRequestConfig alloc] init];
   config.songID = songID;
-  config.mode = ZegoCopyrightedMusicBillingModeCount;
+  config.mode = ZegoCopyrightedMusicBillingModeRoom;
   
   [self.copyrightMusic requestAccompanimentClip:config callback:^(int errorCode, NSString * _Nonnull resource) {
     GBSDKModel *responseModel = [GBSDKModel modelWithJSON:resource];
@@ -531,6 +540,10 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
 - (void)stopPublishingStream {
   GB_LOG_D(@"[RTC][STREAM]Stop publishing stream");
   [self.expressEngine stopPublishingStream];
+}
+
+- (void)onAudioRouteChange:(ZegoAudioRoute)audioRoute {
+  
 }
 
 @end

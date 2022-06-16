@@ -20,5 +20,4 @@
 #import "GBGameConfig.h"
 #import "GBCommonDefines.h"
 
-
 #endif /* GBInternalHeader_h */

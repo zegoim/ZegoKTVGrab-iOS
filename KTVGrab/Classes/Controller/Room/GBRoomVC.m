@@ -205,12 +205,13 @@ GBRunningRoomLeaveBackendRoomListener
   }
   
   GBSongPlay *curSongPlay = [self.runningRoomService getCurSongPlay];
+  GBSong *curSong = [self.runningRoomService getCurSong];
   NSUInteger curGrabDuration = curSongPlay.firstPartDuration;
   
   @weakify(self);
   GBGrabMicView *grabView = [[GBGrabMicView alloc] initWithGrabDuration:curGrabDuration - 3 grabTriggerBlock:^{
     @strongify(self);
-    if (checkSong) {
+    if ([curSong validateIntegrity]) {
       [self.runningRoomService grabCurSong];
     }else {
       [self toastMsg:@"歌曲资源下载未完成，抢唱失败"];
@@ -254,7 +255,7 @@ GBRunningRoomLeaveBackendRoomListener
     
     view.onClickAnotherRound = ^{
       @strongify(self);
-      [self.runningRoomService startAnotherRound];
+      [self.runningRoomService enterNextRound];
     };
     _myRoundGradeView = view;
   }
@@ -293,20 +294,26 @@ GBRunningRoomLeaveBackendRoomListener
 }
 
 - (void)updateUIWithRoomInfo:(GBRoomInfo *)roomInfo checkSong:(BOOL)checkSong {
-  BOOL firstEntry = NO;
-  if (!self.roomInfo || self.roomInfo.roomState == GBRoomStateUnknown) {
-    firstEntry = YES;
-  }
+  BOOL firstEntry = ({
+    BOOL isFirst = NO;
+    if (!self.roomInfo || self.roomInfo.roomState == GBRoomStateUnknown) {
+      isFirst = YES;
+    }
+    isFirst;
+  });
+  
   self.roomInfo = roomInfo;
   
   GBRoomState roomState = roomInfo.roomState;
   GBSong *curSongInfo = [self.runningRoomService getCurSong];
   GBUser *grabUser = [self.runningRoomService getCurGrabUser];
-  GBUser *myself = [self.runningRoomService getMyself];
+  
+  if (roomInfo.roomState == GBRoomStateGrabWaiting) {
+    GB_LOG_E(@"[BUG] -[%@ %@] GBRoomStateGrabWaiting. Song:%@, SongID: %@, SongName: %@, checkSong: %d", NSStringFromClass(self.class), NSStringFromSelector(_cmd), curSongInfo, curSongInfo.songID, curSongInfo.songName, checkSong);
+  }
   
   [self.infoBoard setGrabUser:grabUser];
   [self.infoBoard setSong:curSongInfo];
-  [self.infoBoard setMyself:myself];
   [self.infoBoard setRoomInfo:self.runningRoomService.roomInfo checkSong:checkSong];
   
   [self.panelView setMicEnable:NO];
@@ -332,7 +339,9 @@ GBRunningRoomLeaveBackendRoomListener
 
     case GBRoomStateGrabWaiting:
     {
-      [self showGrabMicView:checkSong];
+      if (!firstEntry) {
+        [self showGrabMicView:checkSong];
+      }
       [self.flywireEffectView play];
     }
       break;
@@ -401,7 +410,7 @@ GBRunningRoomLeaveBackendRoomListener
     @weakify(self);
     _infoBoard.onClickStartGameButton = ^{
       @strongify(self);
-      [self.runningRoomService startAnotherRound];
+      [self.runningRoomService startRound];
     };
   }
   return _infoBoard;
@@ -532,8 +541,6 @@ GBRunningRoomLeaveBackendRoomListener
 //  self.hud.label.text = @"SDK清理完毕";
   [self.hud hideAnimated:YES];
   [self.navigationController popViewControllerAnimated:YES];
-//  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-//  });
 }
 
 #pragma mark - Quit Room
@@ -592,12 +599,6 @@ GBRunningRoomLeaveBackendRoomListener
   [alert show];
 }
 
-- (void)onFirstEntryRoomInfoUpdate:(GBRoomInfo *)roomInfo {
-  if (roomInfo.roomState == GBRoomStateRoundEnd) {
-    
-  }
-}
-
 #pragma mark - Setter & Getter
 - (void)setRunningRoomService:(GBRunningRoomService *)runningRoomService {
   _runningRoomService = runningRoomService;
@@ -650,14 +651,14 @@ GBRunningRoomLeaveBackendRoomListener
   [self.infoBoard setProgress:progress pitch:self.pitchVal];
 }
 
-- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay {
+- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay checkSong:(BOOL)checkSong {
   GBSong *curSongInfo = [self.runningRoomService getCurSong];
   [self.infoBoard setSong:curSongInfo];
-  [self.infoBoard setRoomInfo:self.runningRoomService.roomInfo checkSong:YES];
+  [self.infoBoard setRoomInfo:self.runningRoomService.roomInfo checkSong:checkSong];
 }
 
 /// 根据 SEI 信息进行更新
-- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay progress:(NSUInteger)progress {
+- (void)onSongInfoUIShouldUpdateBySEIWithSongPlay:(GBSongPlay *)songPlay progress:(NSUInteger)progress {
   /// 只刷新一次
   [self.infoBoard setProgress:progress pitch:0];
 }

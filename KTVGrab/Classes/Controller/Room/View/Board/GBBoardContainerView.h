@@ -17,12 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface GBBoardContainerView : UIView
 
-
-/// GBGameWaitingView
-@property (nonatomic, strong) GBUser *myself;
-
 @property (nonatomic, strong) void(^onClickStartGameButton)(void);
-
 
 - (void)setRoomInfo:(GBRoomInfo *)roomInfo checkSong:(BOOL)checkSong;
 

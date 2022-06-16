@@ -80,7 +80,7 @@
   }];
 
   [self.soundwaveEffectView mas_remakeConstraints:^(MASConstraintMaker *make) {
-    make.edges.equalTo(self.bgImageView).insets(padding);
+    make.edges.equalTo(self.bgImageView);
   }];
   
   [self.waitingView mas_remakeConstraints:^(MASConstraintMaker *make) {
@@ -188,7 +188,7 @@
       [self.barView setProgressVisible:YES];
       self.barView.hidden = NO;
       [self.lyricPitchContainer setSong:self.song];
-      if ([self.grabUser.userID isEqualToString:self.myself.userID]) {
+      if ([self.grabUser.userID isEqualToString:[[GBUserAccount shared] myself].userID]) {
         /**
          * 自己抢到了歌, 需要判定歌曲所有资源是否准备完毕
          */
@@ -250,12 +250,17 @@
     [self.barView setProgressVisible:NO];
   }
   self.textBoard.hidden = !visible;
+  if (visible) {
+    if (!(self.song.songName.length > 0)) {
+      GB_LOG_E(@"[BUG] -[%@ %@] ComingSoon is nil. Song:%@, SongID: %@", NSStringFromClass(self.class), NSStringFromSelector(_cmd), self.song, self.song.songID);
+    }
+  }
   [self.textBoard setText:self.song.songName descText:@"即将播放"];
 }
 
 - (void)showWaitingView {
   self.waitingView.hidden = NO;
-  self.waitingView.role = self.myself.roleType;
+  self.waitingView.role = [[GBUserAccount shared] myself].roleType;
 }
 
 - (void)showGameStartPrompt {
@@ -375,15 +380,6 @@
   _checkSong = checkSong;
   [self layoutSubviewsByRoomInfo:roomInfo checkSong:checkSong];
 }
-
-//- (void)setSong:(GBSong *)song {
-//  _song = song;
-//  if (!song) {
-//    return;
-//  }
-//  [self.lyricPitchContainer setSong:song];
-//  [self.barView setSong:song];
-//}
 
 - (void)setGrabUser:(GBUser *)user {
   _grabUser = user;

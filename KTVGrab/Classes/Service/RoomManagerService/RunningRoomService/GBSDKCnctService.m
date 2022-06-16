@@ -139,6 +139,8 @@
    * IM 目前没有提供 KickOut 回调, 只有 Disconnected 回调.
    * 如果 RTC 回调 KickOut, 那么外界应该收到 KickOut 的信息, 而不是 IM 的 Disconnected 所示的网络不好断开连接的信息
    * 所以, 当 IM 的 Disconnected 回调和 RTC 的 KickOut 回调几乎同时到达后, 如果不延迟进行判断, 则可能会向外界抛出错误回调信息.
+   *
+   * PS: IM SDK 其实有 kickout 回调, 但是目前这段代码还没有做修改 - 2022.6.2
    */
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     /**
@@ -148,21 +150,25 @@
      * 4. KickOut
      */
     if (self.imRoomReconnected && self.rtcRoomReconnected) {
+      GB_LOG_D(@"[CNCT]ROOM reconnected");
       [self.listener onRoomReconnected];
       return;
     }
     
     if (self.imRoomReconnecting || self.rtcRoomReconnecting) {
+      GB_LOG_D(@"[CNCT]ROOM reconnecting");
       [self.listener onRoomReconnecting];
       return;
     }
     
     if (self.rtcKickedOut) {
+      GB_LOG_D(@"[CNCT]ROOM kickout");
       [self.listener onRoomKickout];
       return;
     }
     
     if (self.imRoomDisconnected || self.rtcRoomDisconnected) {
+      GB_LOG_D(@"[CNCT]ROOM disconnected");
       [self.listener onRoomDisconnected];
       return;
     }

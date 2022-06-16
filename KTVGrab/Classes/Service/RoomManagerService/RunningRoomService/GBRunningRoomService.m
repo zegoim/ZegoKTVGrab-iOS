@@ -134,7 +134,6 @@ GBRoomCnctListener
 
 - (void)start {
   [self startWithRoomInfo:self.roomInfo];
-  [self.delegate onFirstEntryRoomInfoUpdate:self.roomInfo];
   if (self.roomInfo.roomState == GBRoomStateGrabWaiting ||
       self.roomInfo.roomState == GBRoomStateGrabSuccessfully ||
       self.roomInfo.roomState == GBRoomStateSinging) {
@@ -166,7 +165,7 @@ GBRoomCnctListener
   return self.roomInfo.curRound < self.roomInfo.rounds;
 }
 
-- (void)startAnotherRound {
+- (void)startRound {
   [GBDataProvider startRoundWithRoomID:self.roomInfo.roomID complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
     if (!err) {
       GB_LOG_D(@"Start round in success");
@@ -177,12 +176,27 @@ GBRoomCnctListener
   }];
 }
 
+- (void)enterNextRound {
+  [GBDataProvider enterNextRoundWithRoomID:self.roomInfo.roomID complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
+    if (!err) {
+      GB_LOG_D(@"Enter next round in success");
+    }else {
+      GB_LOG_E(@"Enter next round in failure with error: %@", err);
+      [self.delegate toastMsg:[NSString stringWithFormat:@"再来一轮失败:%ld", (long)err.code]];
+    }
+  }];
+}
+
 - (void)grabCurSong {
-  [GBDataProvider grabMicWithRoomID:self.roomInfo.roomID complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
+  [GBDataProvider grabMicWithRoomID:self.roomInfo.roomID
+                              round:self.roomInfo.curRound
+                              index:self.roomInfo.curSongIndex
+                           complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
     if (!err) {
       GB_LOG_D(@"Grab song in success");
     }else {
       GB_LOG_E(@"Grab song in failure with error: %@", err);
+      [self.delegate toastMsg:[NSString stringWithFormat:@"抢唱失败:%ld", (long)err.code]];
     }
   }];
 }
@@ -213,17 +227,14 @@ GBRoomCnctListener
 #pragma mark - Setter & Getter
 #pragma mark - GBSDKRoomEvent
 - (void)onRoomDisconnected {
-  GB_LOG_D(@"[CONNECT]Room disconnected");
   [self.delegate onRoomDisconnected];
 }
 
 - (void)onRoomReconnecting {
-  GB_LOG_D(@"[CONNECT]Room reconnecting");
   [self.delegate onRoomReconnecting];
 }
 
 - (void)onRoomReconnected {
-  GB_LOG_D(@"[CONNECT]Room reconnected");
   [self synchronizeToLatestRoomState];
   [self.delegate onRoomReconnected];
 }
@@ -445,7 +456,7 @@ GBRoomCnctListener
   }];
   
   [GBDataProvider reportSongsReadyWithRoomID:self.roomInfo.roomID
-                                     inRound:self.roomInfo.curRound
+                                     round:self.roomInfo.curRound
                                   invalidIDs:invalidUniqueIDs.copy
                                     complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
     if (suc && !error) {
@@ -471,7 +482,7 @@ GBRoomCnctListener
     BOOL shouldUpdate = [curPlayingSongID isEqualToString:songPlay.songID];
     GB_LOG_D(@"[SONG_LIST] Determine current playing song name: %@, song name completes just now: %@, should update: %d", [self getCurSongPlay].songName, songPlay.songName, shouldUpdate);
     if (shouldUpdate) {
-      [self.delegate onSongInfoUIShouldUpdateWithSongPlay:songPlay];
+      [self.delegate onSongInfoUIShouldUpdateWithSongPlay:songPlay checkSong:CHECK_SONG];
     }
   }
 }
@@ -515,7 +526,7 @@ GBRoomCnctListener
     if (![seiModel.songID isEqualToString:songPlay.songID]) {
       return;
     }
-    [self.delegate onSongInfoUIShouldUpdateWithSongPlay:songPlay progress:seiModel.progress];
+    [self.delegate onSongInfoUIShouldUpdateBySEIWithSongPlay:songPlay progress:seiModel.progress];
   }
 }
 

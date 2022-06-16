@@ -21,7 +21,7 @@
 #import "GBUploadScoreAPI.h"
 #import "GBGetRoomInfoAPI.h"
 #import "GBOperateMicAPI.h"
-
+#import "GBEnterNextRoundAPI.h"
 
 @implementation GBDataProvider
 
@@ -127,9 +127,11 @@
   }];
 }
 
-+ (void)grabMicWithRoomID:(NSString *)roomID complete:(void (^)(BOOL, NSError * _Nullable, id _Nullable))complete {
++ (void)grabMicWithRoomID:(NSString *)roomID round:(NSInteger)round index:(NSInteger)index complete:(GBDataProviderRsvCallback)complete {
   GBGrabMicAPI *api = [[GBGrabMicAPI alloc] init];
   api.roomID = roomID;
+  api.round = round;
+  api.index = index;
   
   [api gb_startWithCompletionBlock:complete dataHandleBlock:^(NSDictionary * _Nullable data) {
     if (complete) {
@@ -147,7 +149,7 @@
   }];
 }
 
-+ (void)reportSongsReadyWithRoomID:(NSString *)roomID inRound:(NSUInteger)round invalidIDs:(NSArray<NSString *> *)invalidIDs complete:(void (^)(BOOL, NSError * _Nullable, id _Nullable))complete {
++ (void)reportSongsReadyWithRoomID:(NSString *)roomID round:(NSUInteger)round invalidIDs:(NSArray<NSString *> *)invalidIDs complete:(void (^)(BOOL, NSError * _Nullable, id _Nullable))complete {
   GBSongsReadyAPI *api = [[GBSongsReadyAPI alloc] init];
   api.roomID = roomID;
   api.round = round;
@@ -186,8 +188,17 @@
   }];
 }
 
-#pragma mark - 杂项
++ (void)enterNextRoundWithRoomID:(NSString *)roomID complete:(GBDataProviderRsvCallback)complete {
+  GBEnterNextRoundAPI *api = [[GBEnterNextRoundAPI alloc] init];
+  api.roomID = roomID;
+  [api gb_startWithCompletionBlock:complete dataHandleBlock:^(NSDictionary * _Nullable data) {
+    if (complete) {
+      complete(YES, nil, nil);
+    }
+  }];
+}
 
+#pragma mark - 杂项
 + (void)getUserListWithRoomID:(NSString *)roomID complete:(void (^)(BOOL, NSError * _Nullable, NSArray<GBUserRespModel *> * _Nonnull))complete {
   GBGetUserListAPI *api = [[GBGetUserListAPI alloc] init];
   api.roomID = roomID;

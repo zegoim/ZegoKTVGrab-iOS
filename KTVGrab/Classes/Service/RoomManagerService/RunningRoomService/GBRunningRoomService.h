@@ -61,22 +61,73 @@ NS_ASSUME_NONNULL_BEGIN
  * 歌曲进度更新回调
  */
 - (void)onSongProgressUpdate:(NSInteger)progress;
-- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay;
-//TODO:命名需要修改
-- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay progress:(NSUInteger)progress;
+
+/**
+ * 歌曲下载完毕后, 更新歌曲信息 UI
+ * TODO: 方法名不够直观, 需要修改
+ */
+- (void)onSongInfoUIShouldUpdateWithSongPlay:(GBSongPlay *)songPlay checkSong:(BOOL)checkSong;
+
+/**
+ * 根据 SEI 信息更新当前歌曲信息 UI
+ * TODO: 方法名不够直观, 需要修改
+ */
+- (void)onSongInfoUIShouldUpdateBySEIWithSongPlay:(GBSongPlay *)songPlay progress:(NSUInteger)progress;
+
+/**
+ * 歌曲演唱音高数据回调
+ * @param pitch 音高值
+ * @param progress 歌曲播放进度
+ */
 - (void)onSongPitchUpdate:(int)pitch atProgress:(NSInteger)progress;
 
+/**
+ * 麦位列表更新.
+ * 需要 reloadData.
+ */
 - (void)onSeatListUpdate:(NSArray<GBSeatInfo *> *)seatList;
+
+/**
+ * 指定麦位数据更新.
+ * 不需要刷新列表, 只需要对单个 cell 进行操作.
+ */
 - (void)onSeatMiscUpdate:(GBSeatInfo *)seat;
+
+/**
+ * 给 RoomVC 右上角网络测速用的测速回调, 麦位的网络质量数据在 -[GBRunningRoomEvent onSeatMiscUpdate:] 回调方法的 GBSeatInfo.qualityLevel 中
+ */
 - (void)onNetSpeedTestQualityUpdate:(GBNetQuality)qualityLevel;
 
+/**
+ * 展示当前歌曲不允许抢唱的弹窗.
+ * 这个弹窗出现在自己刚进房间的时候就处于正在播放歌曲准备抢麦的阶段.
+ * 刚进房的第一首歌由于玩家自己可能需要下载, 且一首歌已经进行到一半, 所以自己不能抢麦.
+ */
 - (void)alertCurSongGrabNotAllowed;
-- (void)alertRoomHasBeenDestroyed;
-- (void)onFirstEntryRoomInfoUpdate:(GBRoomInfo *)roomInfo;
 
+/**
+ * 展示房间已经被销毁, 即将退出房间的弹窗
+ */
+- (void)alertRoomHasBeenDestroyed;
+
+/**
+ * 开始转菊花 loading
+ */
 - (void)onHudStart;
+
+/**
+ * 更新 loading 文本
+ */
 - (void)onHudTextUpdate:(NSString *)text;
+
+/**
+ * loading 结束
+ */
 - (void)onHudEnd;
+
+/**
+ * 弹出 toast
+ */
 - (void)toastMsg:(NSString *)msg;
 
 @end
@@ -99,6 +150,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, strong) GBRoomInfo *roomInfo;
 
+/**
+ * GBRunningRoomService 所用到的各种次级的服务
+ * 每个 service 类都有对应的注释简要介绍该类的作用
+ */
 @property (nonatomic, strong, nullable) GBSDKEventAgent           *eventAgent;
 @property (nonatomic, strong, nullable) GBHeartbeatService        *heartbeatService;
 @property (nonatomic, strong, nullable) GBRoomUserService         *userService;
@@ -113,18 +168,31 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong, nullable) GBAudioQualityService     *audioQualityService;
 @property (nonatomic, strong, nullable) GBSDKCnctService          *sdkCnctService;
 
-
+/**
+ * 初始化方法
+ * @param roomInfo 房间信息
+ */
 - (instancetype)initWithRoomInfo:(GBRoomInfo *)roomInfo;
+
+/**
+ * 设置 GBRunningRoomEvent 协议的事件监听对象
+ */
 - (void)setDelegate:(id<GBRunningRoomEvent> _Nullable)delegate;
+
+/**
+ * 设置 GBRunningRoomLeaveBackendRoomListener 协议的事件监听对象
+ */
 - (void)setLeaveBackendRoomListener:(id<GBRunningRoomLeaveBackendRoomListener>)listener;
 
 /**
  * 启动服务
+ * 第一次进房的时候调用
  */
 - (void)start;
 
 /**
- * 开始离开后台房间
+ * 退出后台房间
+ * 成功退出后台房间后, 才会退出 RTC 和 IM 房间, 然后清理 SDK
  */
 - (void)startBackendLeaveRoomProcess;
 
@@ -134,22 +202,32 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startServiceCleanUpProcess;
 
 /**
- * 是否还有下一轮
+ * 本地判断是否还有下一轮
  */
 - (BOOL)hasAnotherRound;
 
 /**
- * 开始新一轮抢唱
+ * 通知后台变更房间状态, 开始进行这一轮的抢唱
  */
-- (void)startAnotherRound;
+- (void)startRound;
 
 /**
- * 抢唱当前歌曲
+ * 通知后台变更房间状态, 进入下一轮
+ * 和 -[GBRunningRoom startRound] 的区别在于:
+ * - startRound 是进入了下载歌曲资源, 然后唱歌的环节
+ * - enterNextRound 是回到新一轮的开始页面, 需要再次触发 startRound 才能真正开始游戏
+ */
+- (void)enterNextRound;
+
+/**
+ * 抢唱当前歌曲, 抢唱成功后后台会变更房间状态
  */
 - (void)grabCurSong;
 
 /**
  * 开关麦克风
+ * @param enable 开 / 关
+ * @param flag 开关麦克风操作后, 是否需要弹出 toast 提示用户
  */
 - (void)enableMicrophone:(BOOL)enable toast:(BOOL)flag;
 
