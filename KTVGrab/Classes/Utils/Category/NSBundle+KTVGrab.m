@@ -6,6 +6,7 @@
 //
 
 #import "NSBundle+KTVGrab.h"
+#import "GBImage.h"
 
 @interface GBBundleStubClass : NSObject
 
@@ -21,7 +22,7 @@
 
 + (NSBundle *)GB_bundle {
   NSBundle *currentBundle = [NSBundle bundleForClass:[GBBundleStubClass class]];
-  NSURL *url = [currentBundle URLForResource:@"KTVGrab" withExtension:@"bundle"];
+  NSURL *url = [currentBundle URLForResource:kBundleName withExtension:@"bundle"];
   return [self bundleWithURL:url];
 }
 

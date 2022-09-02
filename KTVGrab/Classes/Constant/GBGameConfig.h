@@ -38,14 +38,14 @@
 
 /**
  * 房间背景图片网络地址格式化字符串
- * 0-15 有效
+ * 0-9 有效
  */
-#define GB_ROOM_BG_IMAGE_PATH_FORMAT @"https://zego-customersucc.oss-cn-shanghai.aliyuncs.com/solution_app/avatar/grab_mic/ios/%d.png"
+#define GB_ROOM_BG_IMAGE_PATH_FORMAT @"https://zego-customersucc.oss-cn-shanghai.aliyuncs.com/solution_app/avatar/ktv/mobile/%d.png"
 
 /**
  * 用户头像图片网络地址格式化字符串, 目前和房间背景图片相同
- * 0-15 有效
+ * 0-9 有效
  */
-#define GB_USER_AVATAR_IMAGE_PATH_FORMAT @"https://zego-customersucc.oss-cn-shanghai.aliyuncs.com/solution_app/avatar/grab_mic/ios/%d.png"
+#define GB_USER_AVATAR_IMAGE_PATH_FORMAT @"https://zego-customersucc.oss-cn-shanghai.aliyuncs.com/solution_app/avatar/ktv/mobile/%d.png"
 
 #endif /* GBGameConfig_h */

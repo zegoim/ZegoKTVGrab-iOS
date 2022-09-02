@@ -245,6 +245,8 @@ GBRunningRoomLeaveBackendRoomListener
     GBRoundResultView *view = [[GBRoundResultView alloc] initWithFrame:self.view.bounds];
     @weakify(self);
     view.onClickLeaveRoom = ^{
+      GB_LOG_D(@"[debug][cb] Click Round result leave room button callback");
+      GB_LOG_D(@"[debug] Room state: %lu", self.runningRoomService.roomInfo.roomState);
       @strongify(self);
       if (self.runningRoomService.roomInfo.roomState == GBRoomStateRoomExit) {
         [self.runningRoomService startServiceCleanUpProcess];
@@ -508,6 +510,7 @@ GBRunningRoomLeaveBackendRoomListener
 
 #pragma mark - Action
 - (void)onClickCloseButton {
+  GB_LOG_D(@"[debug] onClickCloseButton...");
   if ([self.runningRoomService isMyselfHost]) {
     [self alertDestroyRoom];
   }else {
@@ -526,18 +529,22 @@ GBRunningRoomLeaveBackendRoomListener
 #pragma mark - Notification handle
 - (void)didReceiveSDKRoomWillLeaveNotification {
 //  self.hud.label.text = @"正在退出SDK房间...";
+  GB_LOG_D(@"[debug] didReceiveSDKRoomWillLeaveNotification: %@", self);
   [self showHud:self.hud];
 }
 
 - (void)didReceiveSDKRoomDidLeaveNotification {
+  GB_LOG_D(@"[debug] didReceiveSDKRoomDidLeaveNotification: %@", self);
 //  self.hud.label.text = @"退出SDK房间完成";
 }
 
 - (void)didReceiveSDKRoomWillCleanUpNotification {
+  GB_LOG_D(@"[debug] didReceiveSDKRoomWillCleanUpNotification: %@", self);
 //  self.hud.label.text = @"正在清理SDK...";
 }
 
 - (void)didReceiveSDKRoomDidCleanUpNotification {
+  GB_LOG_D(@"[debug] didReceiveSDKRoomDidCleanUpNotification: %@", self);
 //  self.hud.label.text = @"SDK清理完毕";
   [self.hud hideAnimated:YES];
   [self.navigationController popViewControllerAnimated:YES];

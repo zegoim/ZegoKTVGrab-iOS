@@ -9,6 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+static NSString * const kBundleName = @"KTVGrabResource";
 
 typedef NS_ENUM(NSInteger, GBImagePlace) {
   GBImagePlaceBundle = 0,     //spec中设置resource_bundles(图⽚片在framework的bundle中)工程默认使用这种

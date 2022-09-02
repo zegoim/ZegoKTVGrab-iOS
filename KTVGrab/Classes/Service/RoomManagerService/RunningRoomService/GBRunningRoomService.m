@@ -381,24 +381,29 @@ GBRoomCnctListener
 
 #pragma mark - Leave room
 - (void)startBackendLeaveRoomProcess {
+  GB_LOG_D(@"[debug] startBackendLeaveRoomProcess");
   if (!self.roomInfo.roomID) {
+    GB_LOG_D(@"[debug] startBackendLeaveRoomProcess. Invalid roomID: %@, return", self.roomInfo.roomID);
     return;
   }
-  
+  GB_LOG_D(@"[debug] startBackendLeaveRoomProcess, move on");
   [self.delegate onHudStart];
   [self.heartbeatService stopRepeatedlyHeartbeat];
   NSString *roomID = self.roomInfo.roomID;
   @weakify(self);
+  GB_LOG_D(@"[debug] Request (leaveRoomWithRoomID)");
   [GBDataProvider leaveRoomWithRoomID:roomID complete:^(BOOL suc, NSError * _Nullable err, id  _Nullable rsv) {
     @strongify(self);
     [self.delegate onHudEnd];
+    GB_LOG_D(@"[debug][cb] Response (leaveRoomWithRoomID)");
     if (!suc) {
+      GB_LOG_D(@"[debug][cb] Leave room failed. Error: %@", err);
       [self.delegate toastMsg:[NSString stringWithFormat:@"退出后台房间失败: %@", err]];
       return;
     }
     if (![self isMyselfHost]) {
       /**
-       * 非房主继续执行退房流程, 直接退出房间即可
+       * 非房主继续执行流程, 直接退出房间即可退房
        * 房主需要在收到后台 push onRoomExit 的消息的时候再进行下一步
        */
       [self startServiceCleanUpProcess];
@@ -407,9 +412,12 @@ GBRoomCnctListener
 }
 
 - (void)startServiceCleanUpProcess {
+  GB_LOG_D(@"[debug] Start service clean up process");
   if (self.inCleaningSDKProcess) {
+    GB_LOG_D(@"[debug] Service clean up processing, return");
     return;
   }
+  GB_LOG_D(@"[debug] Clean up service...");
   self.inCleaningSDKProcess = YES;
   [GBUserAccount shared].myself = nil;
   [[GBRoomManager shared] leaveRoomAndCleanUpSDK];

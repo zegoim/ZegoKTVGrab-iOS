@@ -315,13 +315,9 @@ GBRoomListVMProtocol
   roomInfo.roomName = roomName;
   roomInfo.rounds = GB_CREATE_ROOM_ROUNDS;
   roomInfo.songsPerRound = GB_CREATE_ROOM_SONGS_PER_ROUND;
-  roomInfo.imgURLString = [self getRoomImageURLStringFromUserID:[GBExternalDependency shared].userID];
+  roomInfo.imgURLString = [GBExternalDependency shared].avatar;
 
   [self enterRoomWithRoomInfo:roomInfo];
-}
-
-- (NSString *)getRoomImageURLStringFromUserID:(NSString *)userID {
-  return [NSString stringWithFormat:GB_ROOM_BG_IMAGE_PATH_FORMAT, [userID intValue] % 16];
 }
 
 #pragma mark - Private
@@ -406,14 +402,8 @@ GBRoomListVMProtocol
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     self.collectionView.userInteractionEnabled = YES;
   });
-  [GBExternalDependency shared].userName = [self getRandomUserName];
   GBRoomInfo *roomInfo = self.viewModel.roomInfos[indexPath.item];
   [self enterRoomWithRoomInfo:roomInfo];
-}
-
-- (NSString *)getRandomUserName {
-  int random = 100 + arc4random_uniform(900);
-  return [NSString stringWithFormat:@"观众 %d", random];
 }
 
 @end

@@ -196,6 +196,7 @@
 }
 
 - (void)leaveRoomAction {
+  GB_LOG_D(@"[debug] Click Round result leave room button");
   if (self.onClickLeaveRoom) {
     self.onClickLeaveRoom();
   }

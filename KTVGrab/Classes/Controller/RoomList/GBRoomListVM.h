@@ -14,9 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol GBRoomListVMProtocol <NSObject>
 
-/// 基础服务加载完成
-- (void)baseServiceSetupComplete;
-
 /// 弹 toast, 持续时间短
 - (void)toast:(NSString *)msg;
 

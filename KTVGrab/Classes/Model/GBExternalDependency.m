@@ -18,10 +18,6 @@
   return _instance;
 }
 
-- (NSString *)avatar {
-  return [NSString stringWithFormat:GB_USER_AVATAR_IMAGE_PATH_FORMAT, [self.userID intValue] % 16];
-}
-
 - (void)validate {
   BOOL ret = YES;
   if (self.appID == 0) {

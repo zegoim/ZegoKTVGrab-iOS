@@ -60,6 +60,9 @@
       else if (err.code == GBBackendRoomNotExists) {
         [self.delegate toastError:@"房间不存在，请刷新列表"];
       }
+      else if (err.code == GBBackendErrorUserAlreadyInRoom) {
+        [self.delegate toastError:@"用户同时只能进入一个房间"];
+      }
       else {
         [self.delegate toastError:@"网络异常，请检查网络后重试"];
       }

@@ -23,8 +23,8 @@
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		71719F9F1E33DC2100824A3D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 71719F9D1E33DC2100824A3D /* LaunchScreen.storyboard */; };
 		86494A492819121000792CC3 /* GBDemoNavigationVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 86494A482819121000792CC3 /* GBDemoNavigationVC.m */; };
-		8666C7B2283CCA6100C417AC /* ZIM.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8666C7AF283CCA5800C417AC /* ZIM.xcframework */; };
-		8666C7B3283CCA6100C417AC /* ZIM.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8666C7AF283CCA5800C417AC /* ZIM.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		864FC18728AFAF7800F273CC /* ZIM.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 864FC18528AFAF7600F273CC /* ZIM.xcframework */; };
+		864FC18828AFAF7800F273CC /* ZIM.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 864FC18528AFAF7600F273CC /* ZIM.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8666C7B4283CCA6300C417AC /* ZegoExpressEngine.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8666C7AE283CCA5800C417AC /* ZegoExpressEngine.xcframework */; };
 		8666C7B5283CCA6300C417AC /* ZegoExpressEngine.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8666C7AE283CCA5800C417AC /* ZegoExpressEngine.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
@@ -47,7 +47,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				8666C7B3283CCA6100C417AC /* ZIM.xcframework in Embed Frameworks */,
+				864FC18828AFAF7800F273CC /* ZIM.xcframework in Embed Frameworks */,
 				8666C7B5283CCA6300C417AC /* ZegoExpressEngine.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -82,8 +82,8 @@
 		862341182833902A00257AFC /* KeyCenter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = KeyCenter.h; sourceTree = "<group>"; };
 		86494A472819121000792CC3 /* GBDemoNavigationVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GBDemoNavigationVC.h; sourceTree = "<group>"; };
 		86494A482819121000792CC3 /* GBDemoNavigationVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GBDemoNavigationVC.m; sourceTree = "<group>"; };
+		864FC18528AFAF7600F273CC /* ZIM.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = ZIM.xcframework; sourceTree = "<group>"; };
 		8666C7AE283CCA5800C417AC /* ZegoExpressEngine.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = ZegoExpressEngine.xcframework; sourceTree = "<group>"; };
-		8666C7AF283CCA5800C417AC /* ZIM.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = ZIM.xcframework; sourceTree = "<group>"; };
 		86D4591A27DB2C6A006E6400 /* ZegoExpressEngine.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ZegoExpressEngine.xcframework; path = ../KTVGrab/Classes/Vendor/ZegoExpressEngine.xcframework; sourceTree = "<group>"; };
 		86D4591D27DB2C81006E6400 /* ZIM.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ZIM.xcframework; path = ../KTVGrab/Classes/Vendor/ZIM.xcframework; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
@@ -99,7 +99,7 @@
 			files = (
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
-				8666C7B2283CCA6100C417AC /* ZIM.xcframework in Frameworks */,
+				864FC18728AFAF7800F273CC /* ZIM.xcframework in Frameworks */,
 				8666C7B4283CCA6300C417AC /* ZegoExpressEngine.xcframework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
 				37698853867D570C853E141F /* Pods_KTVGrab_Example.framework in Frameworks */,
@@ -251,7 +251,7 @@
 			isa = PBXGroup;
 			children = (
 				8666C7AE283CCA5800C417AC /* ZegoExpressEngine.xcframework */,
-				8666C7AF283CCA5800C417AC /* ZIM.xcframework */,
+				864FC18528AFAF7600F273CC /* ZIM.xcframework */,
 			);
 			path = Vendor;
 			sourceTree = "<group>";
@@ -568,7 +568,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B82BHJ5H89;
-				EXCLUDED_ARCHS = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KTVGrab/App/KTVGrab-Prefix.pch";
@@ -595,8 +594,6 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = B82BHJ5H89;
-				EXCLUDED_ARCHS = "";
-				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "KTVGrab/App/KTVGrab-Prefix.pch";
 				INFOPLIST_FILE = "KTVGrab/App/KTVGrab-Info.plist";

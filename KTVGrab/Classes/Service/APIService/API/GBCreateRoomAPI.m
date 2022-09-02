@@ -21,7 +21,7 @@
     @"max_round": @(_rounds),
     @"song_number_per_round": @(_songsPerRound),
     @"nick_name": self.userName,
-    @"avatar": [GBExternalDependency shared].avatar,
+    @"avatar": [GBExternalDependency shared].avatar ?: @"",
     @"max_mic": @(self.maxMic),
   };
 }

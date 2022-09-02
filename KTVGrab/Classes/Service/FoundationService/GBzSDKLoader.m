@@ -31,6 +31,8 @@
 
 - (void)unloadZegoSDKsWithCompletion:(GBEmptyBlock)completion {
   GB_LOG_D(@"[SDK_LOADER] Unloading Zego SDKs...");
+  GB_LOG_D(@"[debug] Unloading Zego SDKs...");
+  [GBIM.shared logout];
   [[GBIM shared] destroy];
   [[GBExpress shared] destroy:^{
     GB_LOG_D(@"[SDK_LOADER] Unloading Zego SDKs completes");

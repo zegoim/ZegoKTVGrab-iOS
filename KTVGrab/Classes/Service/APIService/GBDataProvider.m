@@ -25,11 +25,11 @@
 
 @implementation GBDataProvider
 
-+ (void)getTokenComplete:(void (^)(BOOL, NSError * _Nullable, NSString * _Nullable))complete {
++ (void)getTokenComplete:(void (^)(BOOL, NSError * _Nullable, NSDictionary *))complete {
   GBTokenAPI *api = [[GBTokenAPI alloc] init];
   [api gb_startWithCompletionBlock:complete dataHandleBlock:^(NSDictionary * _Nullable data) {
     if (complete) {
-      complete(YES, nil, data[@"token"]);
+      complete(YES, nil, data);
     }
   }];
 }

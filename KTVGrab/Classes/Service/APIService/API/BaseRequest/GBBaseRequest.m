@@ -10,6 +10,10 @@
 
 @implementation GBBaseRequest
 
+- (BOOL)debugLog {
+  return YES;
+}
+
 - (NSString *)path {
   return @"";
 }

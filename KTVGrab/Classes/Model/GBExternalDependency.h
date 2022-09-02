@@ -20,6 +20,11 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign) unsigned int appID;
 
 /**
+ * AppSign
+ */
+@property (nonatomic, copy) NSString *appSign;
+
+/**
  * 用户 userID
  */
 @property (nonatomic, copy) NSString *userID;
@@ -32,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * 用户头像
  */
-@property (nonatomic, copy, readonly) NSString *avatar;
+@property (nonatomic, copy) NSString *avatar;
 
 /**
  * 业务后台地址

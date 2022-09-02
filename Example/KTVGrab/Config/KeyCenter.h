@@ -12,11 +12,16 @@
 /**
  * 抢唱模块使用的 AppID
  */
-#define kGrabAppID <#YOUR_APPID#>
+#define kGrabAppID <#value#>
+
+/**
+ * 抢唱模块使用的 AppSign
+ */
+#define kGrabAppSign @"<#value#>"
 
 /**
  * 抢唱模块使用的业务后台 host 地址
  */
-#define kGrabHostUrlString @"<#YOUR_HOST#>"
+#define kGrabHostUrlString @"<#value#>"
 
 #endif /* KeyCenter_h */

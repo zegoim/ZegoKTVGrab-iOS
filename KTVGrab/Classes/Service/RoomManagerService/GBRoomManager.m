@@ -227,12 +227,13 @@
 
 
 - (void)leaveRoomAndCleanUpSDK {
+  GB_LOG_D(@"[debug] Leave room and clean up SDK");
   GB_ROOM_MANAGER_NOTIFY(kGBSDKRoomWillLeaveNotificationName)
   
   @weakify(self);
   [self leaveSDKRoomWithCompletion:^(NSError *error) {
     @strongify(self);
-    
+    GB_LOG_D(@"[debug] Leave room and clean up SDK completes");
     GB_ROOM_MANAGER_NOTIFY(kGBSDKRoomDidLeaveNotificationName)
     self.roomInfo = nil;
     self.runningRoomService = nil;

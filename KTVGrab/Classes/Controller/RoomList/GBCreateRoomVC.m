@@ -13,9 +13,10 @@
 #import <GoKit/GoUIKit.h>
 #import <MessageThrottle/MessageThrottle.h>
 #import "GBTitleTextField.h"
+#import "GBExternalDependency.h"
 
 static int const kGBRoomNameMaxCharNum = 20;
-static int const kGBUserNameMaxCharNum = 10;
+static int const kGBUserNameMaxCharNum = 20;
 
 @interface GBCreateRoomVC ()<UITextFieldDelegate>
 
@@ -112,13 +113,12 @@ static int const kGBUserNameMaxCharNum = 10;
 }
 
 - (NSString *)getRandomUserName {
-  int random = 100 + arc4random_uniform(900);
-  return [NSString stringWithFormat:@"房主 %d", random];
+  return [GBExternalDependency shared].userName;
 }
 
 - (NSString *)getRandomRoomName {
   int random = 100 + arc4random_uniform(900);
-  return [NSString stringWithFormat:@"在线 KTV 房间 %d", random];
+  return [NSString stringWithFormat:@"抢唱房间 %d", random];
 }
 
 #pragma mark - Protocol

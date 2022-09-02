@@ -10,6 +10,7 @@
 #import "GBTokenService.h"
 #import <GZIP/GZIP.h>
 #import <YYKit/YYKit.h>
+@import GoKit;
 
 #define e(x) [self _newErrorByIMError:(x)]
 
@@ -55,7 +56,10 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.im";
 - (void)create {
   GB_LOG_D(@"[IM]IM Version: %@", [ZIM getVersion]);
   GB_LOG_D(@"[IM]Create IM");
-  ZIM *im = [ZIM createWithAppID:[GBExternalDependency shared].appID];
+  ZIMAppConfig *config = [[ZIMAppConfig alloc] init];
+  config.appID = GBExternalDependency.shared.appID;
+  config.appSign = GBExternalDependency.shared.appSign;
+  ZIM *im = [ZIM createWithAppConfig:config];
   self.im = im;
   
   [im setEventHandler:self];
@@ -79,18 +83,11 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.im";
 }
 
 #pragma mark - Callback
-
-- (void)zim:(ZIM *)zim tokenWillExpire:(unsigned int)second {
-  // 在这里更新 token
-  @weakify(self);
-  [[GBTokenService shared] getTokenWithCompletion:^(NSString * _Nullable token) {
-    @strongify(self);
-    [self renewToken];
-  } shouldForceUpdate:YES];
-}
-
 - (void)zim:(ZIM *)zim errorInfo:(ZIMError *)errorInfo {
   GB_LOG_E(@"[IM][CB]ERROR: %@, code: %lu, message: %@", errorInfo, errorInfo.code, errorInfo.message);
+  if (errorInfo.code == ZIMErrorCodeCommonModuleInvalidAppID) {
+    [GoNotice showToast:@"无效 appID,请确认此 appID 已开通 ZIM 服务" onView:[UIApplication sharedApplication].keyWindow];
+  }
 }
 
 - (void)zim:(ZIM *)zim connectionStateChanged:(ZIMConnectionState)state event:(ZIMConnectionEvent)event extendedData:(NSDictionary *)extendedData {
@@ -197,15 +194,6 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.im";
   return [NSError errorWithDomain:GBIMErrorDomain code:errorCode userInfo:@{ NSDebugDescriptionErrorKey: desc}];
 }
 
-- (void)renewToken {
-  NSString *token = [[GBTokenService shared] getCacheToken];
-  [self.im renewToken:token callback:^(NSString * _Nonnull newToken, ZIMError * _Nonnull errorInfo) {
-    if (newToken.length > 0) {
-      [[GBTokenService shared] updateToken:newToken];
-    }
-  }];
-}
-
 - (NSString *)stringMessageFromMessage:(ZIMMessage *)message {
   if ([message isKindOfClass:[ZIMTextMessage class]]) {
     ZIMTextMessage *msg = (ZIMTextMessage *)message;
@@ -234,8 +222,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.im";
   NSString *userName = [GBExternalDependency shared].userName;
   
   // 先获取 token
-  [[GBTokenService shared] getTokenWithCompletion:^(NSString * _Nullable token) {
-    
+  [GBTokenService.shared requestToken:^(NSString * _Nonnull token) {
     if (!(token.length > 0)) {
       !complete ?: complete([self _newArgError:@"token"]);
       return;
@@ -246,16 +233,16 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.im";
     userInfo.userName = userName;
     
     GB_LOG_D(@"[IM]Login IM. UserID:%@. UserName: %@. Token: %@", userID, userName, token);
-    [self.im loginWithUserInfo:userInfo token:token callback:^(ZIMError * _Nonnull errorInfo) {
+    [self.im loginWithUserInfo:userInfo token:nil callback:^(ZIMError * _Nonnull errorInfo) {
       GB_LOG_D(@"[IM][CB]IM Login Callback");
       !complete ?: complete(e(errorInfo));
     }];
-    
-  } shouldForceUpdate:YES];
+  }];
 }
 
 - (void)logout {
   GB_LOG_D(@"[IM]Logout IM");
+  [GBTokenService.shared stop];
   self.loggedIn = NO;
   [self.im logout];
 }

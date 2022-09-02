@@ -19,13 +19,13 @@ typedef void(^GBDataProviderRoomInfoCallback)(BOOL suc, NSError * _Nullable err,
 /**
  * 获取 token
  */
-+ (void)getTokenComplete:(void(^)(BOOL suc, NSError * _Nullable err, NSString * _Nullable token))complete;
++ (void)getTokenComplete:(void (^)(BOOL, NSError * _Nullable, NSDictionary *))complete;
 
 #pragma mark - 房间协议
 
 /**
  * 拉取房间列表
- * @param count 单词拉取的房间数量
+ * @param count 单次拉取的房间数量
  * @param time 拉取 beginTimeStamp 时间之前的若干个房间
  * @param complete 拉取房间列表结果回调
  */

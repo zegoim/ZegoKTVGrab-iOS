@@ -9,6 +9,8 @@
 #import "GBDataProvider.h"
 #import <YYKit/YYKit.h>
 
+#define GB_TOKEN_DEFAULT_REQ_INTERVAL 5
+
 @interface GBTokenService ()
 
 @property (nonatomic, copy) NSString *token;
@@ -26,29 +28,32 @@
   return _instance;
 }
 
-- (void)getTokenWithCompletion:(void (^)(NSString * _Nullable))completion shouldForceUpdate:(BOOL)forceUpdate {
-  if (!forceUpdate) {
-    if (self.token.length > 0) {
-      !completion ?: completion(self.token);
-      return;
-    }
-  }
+- (void)stop {
+  GB_LOG_D(@"[token]Stop requesting token");
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(requestToken:) object:nil];
+}
+
+- (void)requestToken:(void(^)(NSString *token))complete {
+  GB_LOG_D(@"[token]Requesting token");
   @weakify(self);
-  GB_LOG_D(@"[TOKEN] Get token");
-  [GBDataProvider getTokenComplete:^(BOOL suc, NSError * _Nullable err, NSString * _Nullable token) {
+  [GBDataProvider getTokenComplete:^(BOOL suc, NSError * _Nullable err, NSDictionary * _Nonnull data) {
     @strongify(self);
-    GB_LOG_D(@"[TOKEN] Get token complete: %@", token);
-    self.token = token;
-    !completion ?: completion(token);
+    NSString *token = data[@"token"];
+    int tokenDuration = [data[@"token_duration"] intValue];
+    GB_LOG_D(@"[token]Requesting token complete: %@, token duration: %d", token, tokenDuration);
+    int timeInterval = GB_TOKEN_DEFAULT_REQ_INTERVAL;
+    if (token.length > 0) {
+      self.token = token;
+      timeInterval = MAX(tokenDuration - 300, GB_TOKEN_DEFAULT_REQ_INTERVAL);
+    }
+    GB_LOG_D(@"[token]Will request token again after %d seconds...", timeInterval);
+    [self performSelector:@selector(requestToken:) withObject:nil afterDelay:timeInterval];
+    !complete ?: complete(token);
   }];
 }
 
 - (NSString *)getCacheToken {
   return self.token;
-}
-
-- (void)updateToken:(NSString *)token {
-  self.token = token;
 }
 
 @end

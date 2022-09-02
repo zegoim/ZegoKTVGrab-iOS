@@ -12,6 +12,8 @@
 #import "GBExternalDependency.h"
 #import "GBGrabMicView.h"
 #import "KeyCenter.h"
+#import <ZegoExpressEngine/ZegoExpressEngine.h>
+#import <ZIM/ZIM.h>
 
 @interface GBViewController ()
 
@@ -26,8 +28,8 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   
-  [self setupUI];
   [self loadGrabData];
+  [self setupUI];
   
   NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
   NSString *cachePath = paths.lastObject;
@@ -46,9 +48,32 @@
   [enterGrabBtn setTitleColor:UIColor.blueColor forState:UIControlStateNormal];
   [enterGrabBtn addTarget:self action:@selector(enterGrab) forControlEvents:UIControlEventTouchUpInside];
   
+  NSString *env = ({
+    NSString *str = @"Env:";
+    NSString *suffix;
+    if ([GBExternalDependency shared].isTestEnv) {
+      suffix = @"Alpha";
+    }else {
+      suffix = @"Product";
+    }
+    str = [str stringByAppendingString:suffix];
+    str;
+  });
+  
+  UILabel *sdkVersionLabel = [[UILabel alloc] init];
+  sdkVersionLabel.numberOfLines = 0;
+  sdkVersionLabel.text = [NSString stringWithFormat:@"Express: %@\nZIM: %@\n%@", [ZegoExpressEngine getVersion], [ZIM getVersion], env];
+  
   [self.view addSubview:enterGrabBtn];
+  [self.view addSubview:sdkVersionLabel];
+  
   [enterGrabBtn mas_makeConstraints:^(MASConstraintMaker *make) {
     make.center.equalTo(self.view);
+  }];
+  
+  [sdkVersionLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+    make.centerX.equalTo(self.view);
+    make.bottom.equalTo(self.view).offset(-50);
   }];
 }
 
@@ -73,11 +98,12 @@
   }
   
   [GBExternalDependency shared].appID = kGrabAppID;
+  [GBExternalDependency shared].appSign = kGrabAppSign;
   [GBExternalDependency shared].userID = userID; //randomUserID;
   [GBExternalDependency shared].userName = userName;//[NSString stringWithFormat:@"ios_grab_%d", rdNameSuffix];
   [GBExternalDependency shared].hostUrlString = kGrabHostUrlString;
-  [GBExternalDependency shared].isTestEnv = NO;
+  [GBExternalDependency shared].avatar = @"https://www.rongshunew.com/uploads/allimg/c190804/15649236322Q20-5bJ18.jpg";
+  [GBExternalDependency shared].isTestEnv = YES;
 }
-
 
 @end

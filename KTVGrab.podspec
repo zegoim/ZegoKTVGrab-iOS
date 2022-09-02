@@ -11,12 +11,6 @@ Pod::Spec.new do |s|
   s.version          = '0.1.0'
   s.summary          = 'KTV 抢唱业务场景'
 
-# This description is used to generate tags and improve search results.
-#   * Think: What does it do? Why did you write it? What is the focus?
-#   * Try to keep it short, snappy and to the point.
-#   * Write the description between the DESC delimiters below.
-#   * Finally, don't worry about the indent, CocoaPods strips it!
-
   s.description      = <<-DESC
 TODO: Add long description of the pod here.
                        DESC
@@ -29,14 +23,14 @@ TODO: Add long description of the pod here.
   s.ios.deployment_target = '9.0'
   s.source_files = 'KTVGrab/Classes/**/*'
   s.resource_bundles = {
-    'KTVGrab' => ['KTVGrab/Assets/*.{xcassets}', 'KTVGrab/Assets/Resources/*']
+    'KTVGrabResource' => ['KTVGrab/Assets/*.{xcassets}', 'KTVGrab/Assets/Resources/*']
   }
   
   s.prefix_header_contents = '#import "GBInternalHeader.h"'
   
   s.dependency 'Masonry'
   s.dependency 'YYKit'
-  s.dependency 'LEEAlert'
+  s.dependency 'LEEAlert',        '1.4.3'
   s.dependency 'YTKNetwork'
   s.dependency 'lottie-ios'
   s.dependency 'MBProgressHUD'
@@ -45,10 +39,10 @@ TODO: Add long description of the pod here.
   s.dependency 'MJRefresh'
   s.dependency 'ZegoLyricView'
   s.dependency 'ZegoPitchView'
-  s.dependency 'lottie-ios'
-  s.dependency 'GZIP', '~> 1.3.0'
+  s.dependency 'lottie-ios',      '3.2.3'
+  s.dependency 'GZIP',            '1.3.0'
   s.dependency 'Toast'
   s.dependency 'GoKit'
-  s.dependency 'MessageThrottle'
+  s.dependency 'MessageThrottle', '1.4.0'
   
 end

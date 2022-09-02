@@ -186,7 +186,7 @@
 - (void)setViewModel:(GBRoomListCellVM *)viewModel {
   _viewModel = viewModel;
   GBRoomInfo *roomInfo = viewModel.roomInfo;
-  self.bgImageView.imageURL = [NSURL URLWithString:roomInfo.imgURLString];
+  [self.bgImageView setImageWithURL:[NSURL URLWithString:roomInfo.imgURLString] placeholder:[GBImage imageNamed:@"gb_room_bg_placeholder"]];
   self.roomNameLabel.text = roomInfo.roomName;
   self.userCountLabel.text = [NSString stringWithFormat:@"%lu/%lu", roomInfo.userOnstageCount, roomInfo.seatsCount];
 }

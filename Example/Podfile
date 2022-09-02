@@ -1,4 +1,3 @@
-source 'https://github.com.cnpmjs.org/CocoaPods/Specs.git'
 source 'https://github.com/CocoaPods/Specs.git'
 
 use_frameworks!
@@ -12,10 +11,14 @@ target 'KTVGrab_Example' do
     pod 'GoKit', :git => 'https://github.com/zegoim/ZegoGoKit-iOS.git', :branch => 'master'
     pod 'ZegoNetwork', :git => 'https://github.com/zegoim/ZegoGoNetwork-iOS.git', :branch => 'master'
 
-post_install do |installer|
-  installer.pods_project.build_configurations.each do |config|
-    config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+  post_install do |installer|
+    installer.pods_project.build_configurations.each do |config|
+      config.build_settings["EXCLUDED_ARCHS[sdk=iphonesimulator*]"] = "arm64"
+    end
   end
-end
+
+  post_integrate do |installer|
+    system("ruby ./add_vendor_frameworks_to_pods.rb") #用户给 pod target 添加主工程的 frameworks 依赖, 例如: ZegoExpressEngine.xcframework
+  end
 
 end

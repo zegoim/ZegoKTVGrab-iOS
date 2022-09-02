@@ -94,7 +94,7 @@
 }
 
 - (void)textFieldEditingChanged:(UITextField *)textField {
-  if (self.onTextFieldShouldReturnBlock) {
+  if (self.onTextFieldEditingBlock) {
     self.onTextFieldEditingBlock(textField.text);
   }
 }

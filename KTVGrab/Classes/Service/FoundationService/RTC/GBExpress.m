@@ -67,7 +67,9 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
    */
   ZegoEngineConfig *config = [[ZegoEngineConfig alloc] init];
   config.advancedConfig = @{
-    @"sei_audio_drive": @"false",
+    @"sei_audio_drive":             @"false",
+    @"bluetooth_capture_only_voip": @"false",
+    @"ktv_adapt_device_delay":      @"false",
   };
   [ZegoExpressEngine setEngineConfig:config];
 }
@@ -111,6 +113,13 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
     @"play_quality_interval":@"500",
     @"sei_audio_drive": @"true",
     @"room_retry_time": [NSString stringWithFormat:@"%d", GB_NET_TIME_OUT_SECOND],
+    //蓝牙耳机在非通话场景，只使用单工模式（只播放，不能采集，采集使用手机只带麦克风）
+    //蓝牙耳机在双工的情况下，只能使用通话模式，此时会引入明显的耳返延迟，同时蓝牙耳机双工的情况下，由于协议的原因，播放音质会有明显的下降。
+    @"bluetooth_capture_only_voip": @"true",
+    //自适应播放延迟
+    @"auxiliary_delay_mode": @"0",
+    //主路推流时间戳偏移伴奏播放延迟
+    @"ktv_adapt_device_delay": @"true",
   };
   [ZegoExpressEngine setEngineConfig:config];
 }
@@ -156,6 +165,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
   [[ZegoExpressEngine sharedEngine] enableANS:YES];
   [[ZegoExpressEngine sharedEngine] setAECMode:ZegoAECModeSoft];
   [[ZegoExpressEngine sharedEngine] setANSMode:ZegoANSModeMedium];
+  [[ZegoExpressEngine sharedEngine] enableHeadphoneAEC:NO];
 }
 
 #pragma mark - Internal
@@ -508,6 +518,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
     audioConfig.codecID = ZegoAudioCodecIDLow3;
     audioConfig.bitrate = 48;
     [[ZegoExpressEngine sharedEngine] setAudioConfig:audioConfig channel:ZegoPublishChannelMain];
+    [self.expressEngine setAudioCaptureStereoMode:ZegoAudioCaptureStereoModeNone];
   }
 }
 
@@ -519,6 +530,7 @@ static NSString * const GBIMErrorDomain = @"im.zego.KTVGrab.express";
     audioConfig.codecID = ZegoAudioCodecIDLow3;
     audioConfig.bitrate = 128;
     [[ZegoExpressEngine sharedEngine] setAudioConfig:audioConfig channel:ZegoPublishChannelMain];
+    [self.expressEngine setAudioCaptureStereoMode:ZegoAudioCaptureStereoModeAlways];
   }
 }
 

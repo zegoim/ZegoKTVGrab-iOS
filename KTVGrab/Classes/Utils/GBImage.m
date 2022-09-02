@@ -7,8 +7,6 @@
 
 #import "GBImage.h"
 
-static NSString * const kBundleName = @"KTVGrab";
-
 @implementation GBImage
 
 + (UIImage *)imageNamed:(NSString *)name
